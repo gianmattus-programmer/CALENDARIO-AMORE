@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestro Calendario de Amor Diario</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #fde9f7;
+            color: #d63384;
+            text-align: center;
+            position: relative; /* Para el confeti */
+            overflow-x: hidden; /* Evitar scroll horizontal por el confeti */
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .day {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+            position: relative; /* Para el tooltip */
+        }
+
+        .day:hover {
+            transform: scale(1.1);
+        }
+
+        .day.today {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            transform: scale(1.1);
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.2);
+            }
+        }
+
+        #message-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2em;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1010; /* Mayor z-index para estar sobre el confeti */
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #d63384;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: #ff69b4;
+            animation: float 4s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 15px;
+            background: #f06;
+            border-radius: 5px;
+            opacity: 0;
+        }
+
+        /* Tooltip styles */
+        .day::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            /* Inicialmente lo colocamos por debajo */
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+            z-index: 10;
+        }
+
+        .day:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+            /* Mantenemos un pequeño desplazamiento hacia arriba al hacer hover */
+        }
+
+        /* Media query para pantallas más pequeñas - ajustamos la posición si es necesario */
+        @media (max-width: 600px) {
+            .day::before {
+                bottom: -20px; /* Ajustar si es necesario en pantallas pequeñas */
+            }
+            .day:hover::before {
+                transform: translateX(-50%) translateY(-3px); /* Ajustar si es necesario en pantallas pequeñas */
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Nuestro Calendario de Amor Diario</h1>
+    <div class="message-container" id="message-modal">
+        <button class="close-btn" onclick="cerrarMensaje()">&times;</button>
+        <div id="modal-content"></div>
+    </div>
+    <div class="calendar">
+        <div class="day" data-day="1" data-tooltip="Un recuerdo de nuestro primer café">1</div>
+        <div class="day" data-day="2" data-tooltip="Tu risa es mi sonido favorito">2</div>
+        <div class="day" data-day="3" data-tooltip="Gracias por cada abrazo">3</div>
+        <div class="day" data-day="4" data-tooltip="Soñando con nuestro futuro">4</div>
+        <div class="day" data-day="5" data-tooltip="Cada día te quiero más">5</div>
+        <div class="day" data-day="6" data-tooltip="Eres mi mayor alegría">6</div>
+        <div class="day" data-day="7" data-tooltip="Un fin de semana perfecto contigo">7</div>
+        <div class="day" data-day="8" data-tooltip="Tu mirada me enamora">8</div>
+        <div class="day" data-day="9" data-tooltip="Aventura tras aventura">9</div>
+        <div class="day" data-day="10" data-tooltip="Eres mi confidente">10</div>
+        <div class="day" data-day="11" data-tooltip="Siempre juntos">11</div>
+        <div class="day" data-day="12" data-tooltip="Eres mi inspiración">12</div>
+        <div class="day" data-day="13" data-tooltip="Contando los días para verte">13</div>
+        <div class="day" data-day="14" data-tooltip="Mi San Valentín eterno">14</div>
+        <div class="day today" data-day="15" data-tooltip="Nuestro día especial">15</div>
+        <div class="day" data-day="16" data-tooltip="Extrañándote un poquito">16</div>
+        <div class="day" data-day="17" data-tooltip="Pensando en ti">17</div>
+        <div class="day" data-day="18" data-tooltip="Una sorpresa te espera...">18</div>
+        <div class="day" data-day="19" data-tooltip="Recuerdo de aquella noche">19</div>
+        <div class="day" data-day="20" data-tooltip="Eres mi estrella brillante">20</div>
+        <div class="day" data-day="21" data-tooltip="Un día lleno de amor">21</div>
+        <div class="day" data-day="22" data-tooltip="Gracias por tu apoyo">22</div>
+        <div class="day" data-day="23" data-tooltip="Eres mi paz">23</div>
+        <div class="day" data-day="24" data-tooltip="Soñando despierto contigo">24</div>
+        <div class="day" data-day="25" data-tooltip="Cada momento es único">25</div>
+        <div class="day" data-day="26" data-tooltip="Tu felicidad es la mía">26</div>
+        <div class="day" data-day="27" data-tooltip="Abrazos virtuales">27</div>
+        <div class="day" data-day="28" data-tooltip="Eres mi complemento">28</div>
+        <div class="day" data-day="29" data-tooltip="Un día para celebrar nuestro amor">29</div>
+        <div class="day" data-day="30" data-tooltip="Agradecido por tenerte">30</div>
+        <div class="day" data-day="31" data-tooltip="Y que vengan muchos días más">31</div>
+    </div>
+
+    <script>
+        const mensajesDiarios = {
+            //Aquí tienes aún más texto para cada una de esas hermosas declaraciones de amor, ¡llevándolas a un nivel superior de intensidad y detalle!
+        1: "Mi amor eterno, cada nuevo amanecer a tu lado se revela como una aventura fascinante que mi alma anhela vivir plenamente, explorando cada rincón de este viaje contigo. ¡Te amo con cada fibra de mi ser, hoy y siempre!",
+        2: "Tu sonrisa radiante es el sol que ilumina mis mañanas por completo, disipando cualquier sombra y llenando mi mundo de una calidez incomparable. Gracias infinitas por existir, mi vida, mi luz, mi todo.",
+        3: "Hoy, más que nunca, quiero detener el tiempo para recordarte lo absolutamente increíble que eres en cada aspecto, y la inmensa felicidad que irradias a mi existencia con solo tu presencia. ¡Te adoro con la totalidad de mi corazón, mi tesoro más preciado!",
+        4: "Eres la melodía más exquisita y conmovedora que mis días tienen el privilegio de escuchar una y otra vez, una sinfonía constante de amor y alegría. Te amo hoy con una intensidad que supera al ayer, y mañana mi amor crecerá aún más profundo e inmenso.",
+        5: "Un día más se presenta como una bendición, una nueva oportunidad para amarte con una pasión desbordante y agradecer profundamente al universo por el regalo inestimable de tenerte como compañera. Eres mi universo entero, mi razón de ser.",
+        6: "Que este día se desborde de la misma alegría contagiosa y el mismo amor puro que tú generosamente me brindas en cada instante. ¡Te amo infinitamente, más allá de las estrellas y de cualquier límite imaginable!",
+        7: "Eres mi refugio seguro en medio de cualquier tormenta, la paz serena que aquieta mi alma, mi amor eterno e incondicional que trasciende el tiempo. ¡Feliz día, mi preciosa luz, el faro que guía mi corazón!",
+        8: "Cada pequeño detalle que te define, cada gesto, cada mirada, enciende en mí una llama de amor aún más intensa y profunda. Gracias por ser auténticamente tú, simplemente perfecta en cada imperfección. Te amo más de lo que las palabras pueden expresar.",
+        9: "Hoy celebro con una alegría inmensa y un corazón agradecido el regalo maravilloso de tu amor que ilumina cada rincón de mi vida. Eres absolutamente maravillosa en todos los sentidos, un verdadero milagro.",
+        10: "Contigo, cada día se transforma en una experiencia inherentemente especial y significativa, pero hoy siento la necesidad imperiosa de decírtelo con una fuerza que resuene en el universo entero: ¡Te amo profunda, incondicional y eternamente!",
+        11: "Tu amor me inspira a alcanzar mis sueños más audaces y me infunde una fuerza inagotable para superar cualquier obstáculo que se presente en nuestro camino. Gracias por ser mi motor vital, la chispa que enciende mi alma.",
+        12: "Eres, sin lugar a dudas ni comparación, la persona más increíble, fascinante y maravillosa que he tenido el privilegio de conocer en esta vida. Amarte es la alegría más grande, pura y trascendental que mi existencia puede experimentar.",
+        13: "Que hoy sientas la inmensidad de cada átomo del amor apasionado y sincero que reside en mi corazón solo para ti. Eres mi sueño más anhelado y preciado, convertido en una hermosa y tangible realidad que abrazo cada día.",
+        14: "Cada día que tengo la dicha de pasar a tu lado se siente como un San Valentín anticipado, una celebración constante de nuestro amor que florece con cada instante compartido. ¡Te amo con cada fibra de mi ser, con una devoción eterna!",
+        15: "¡Feliz día, mi amor adorado y esencial! Hoy, como cada segundo desde que te conocí, mi corazón late con una fuerza indomable y una melodía única que solo tu amor puede componer. Eres mi todo absoluto, mi razón de respirar.",
+        16: "Incluso después de la magia de este día tan especial, sigues siendo el primer y último pensamiento que cruza mi mente, la melodía constante en el silencio de mi alma. Te amo más allá de cualquier límite que la imaginación pueda concebir.",
+        17: "Ayer, hoy y en todos los mañanas que nos aguardan, mi amor inmenso y sincero por ti crece sin restricciones, expandiéndose como el universo mismo. Eres la fuente inagotable de mi felicidad plena y duradera.",
+        18: "Tu amor es la luz brillante y cálida que guía cada uno de mis pasos en este viaje llamado vida, iluminando mi camino con una claridad y una esperanza incomparables. Gracias por iluminar mi existencia de una manera tan profundamente transformadora.",
+        19: "Hoy te envío no solo mi cariño más sincero y profundo, sino también un recordatorio constante y palpable de cuánto te amo, te valoro y te necesito a mi lado para completar la sinfonía de mi vida.",
+        20: "Eres la razón fundamental por la que cada nuevo día amanece lleno de promesas, colores vibrantes y una esperanza renovada. Te amo más allá de la capacidad limitada que las palabras tienen para expresar la inmensidad de mis sentimientos.",
+        21: "Que este día se encuentre completamente colmado de momentos tan dulces, especiales y memorables como la dulzura incomparable de tu amor que envuelve mi alma. ¡Te adoro con cada célula de mi ser!",
+        22: "Tu simple y maravillosa presencia en mi vida es el regalo más valioso, inestimable y significativo que jamás podría haber soñado recibir. Te amo inmensamente, con una profundidad que trasciende el tiempo y el espacio.",
+        23: "Hoy quiero tomarme un momento eterno para agradecerte desde lo más profundo de mi corazón por cada sonrisa radiante que me regalas, cada abrazo cálido que me reconforta, cada instante precioso que atesoramos juntos. Te amo más de lo que las palabras pueden decir.",
+        24: "Eres la alegría constante que reside en mi corazón, el amor verdadero y eterno que siempre anhelé encontrar. ¡Feliz día, mi vida amada, la dueña absoluta de mi alma!",
+        25: "Incluso aquellos días que podrían parecer ordinarios y rutinarios se transforman en experiencias extraordinarias, llenas de magia y significado, simplemente por tener la dicha de compartir cada momento contigo. Te amo profundamente.",
+        26: "Tu amor tiene el poder asombroso de transformarme en una mejor versión de mí mismo con cada nuevo día, inspirándome a crecer y evolucionar. Gracias infinitas por tu existencia, por ser el catalizador de mi mejor yo.",
+        27: "Hoy te abrazo con la fuerza de todo mi corazón y te digo con una sinceridad que emana desde lo más profundo de mi alma cuánto te amo, cuánto te valoro y cuánto te necesito a mi lado para sentirme completo y feliz.",
+        28: "Eres la pieza esencial y perfectamente tallada que faltaba para completar el intrincado rompecabezas de mi vida, encajando de una manera tan armoniosa y perfecta. Te amo más allá de cualquier límite que tu maravillosa imaginación pueda concebir.",
+        29: "Que este día resplandezca con una luz tan brillante y особенная como la que emana de tu ser, tan absolutamente especial como tú lo eres para mi corazón, mi reina adorada. Te amo con una pasión que arde eternamente.",
+        30: "Cada segundo fugaz que tengo el privilegio de compartir contigo se convierte en un tesoro invaluable que guardo celosamente en lo más profundo de mi memoria y de mi corazón. Gracias por compartir tu hermosa vida conmigo.",
+        31: "Y al llegar al final de este mes, mi amor profundo, sincero e inquebrantable por ti sigue tan vivo, vibrante y apasionado como aquel primer día mágico en que nuestros caminos se unieron para siempre. Te amo eternamente, mi amor.",
+        }
+        // Asegúrate de que el mes tenga 31 días para el calendario
+    
+            // Asegúrate de que los días del mes tengan el mismo número de días que el mes actual
+            const diasDelMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+            const dias = document.querySelectorAll('.day');
+            dias.forEach((dia, index) => {
+                if (index >= diasDelMes) {
+                    dia.style.display = 'none';
+                }
+            });      
+
+
+        function mostrarMensajeDiario() {
+            const hoy = new Date();
+            const diaActual = hoy.getDate();
+            const modal = document.getElementById('message-modal');
+            const modalContent = document.getElementById('modal-content');
+            const mensaje = mensajesDiarios[diaActual];
+
+            let mensajeFinal = "";
+            if (mensaje) {
+                mensajeFinal = `<p>${mensaje}</p>`;
+            } else {
+                mensajeFinal = `<p>Hoy te envío un abrazo gigante y todo mi amor. ¡Que tengas un día maravilloso!</p>`;
+            }
+
+            modalContent.innerHTML = `
+                <h2>¡Hola, mi amor!</h2>
+                ${mensajeFinal}
+                <p style="margin-top: 20px; font-style: italic; color: #d63384;">Regresa mañana para otro mensajito especial. ¡Te amo!</p>
+                <div style="display: flex; justify-content: center; margin-top: 10px;">
+                    <span style="font-size: 2em; color: #ff69b4;">💖</span>
+                </div>
+            `;
+            modal.style.display = 'block';
+            generarConfetti();
+            generarCorazones();
+        }
+
+        function cerrarMensaje() {
+            const modal = document.getElementById('message-modal');
+            modal.style.display = 'none';
+        }
+
+        function generarCorazones() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = Math.random() * 100 + 'vh';
+                heart.style.fontSize = Math.random() * 20 + 15 + 'px';
+                heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+                document.body.appendChild(heart);
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            }, 200);
+        }
+
+        function generarConfetti() {
+            const duration = 1 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+              const timeLeft = animationEnd - Date.now();
+
+              if (timeLeft <= 0) {
+                return clearInterval(interval);
+              }
+
+              const particleCount = 50 * (timeLeft / duration);
+              // since particles often fly past the target, reduce the particle count a bit
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        // Al cargar la página, muestra el mensaje del día actual
+        window.onload = function() {
+            mostrarMensajeDiario();
+            // Resalta el día actual en el calendario y añade tooltip
+            const hoy = new Date();
+            const diaActual = hoy.getDate();
+            const dias = document.querySelectorAll('.day');
+            dias.forEach(dia => {
+                const diaNumero = parseInt(dia.textContent);
+                if (diaNumero === diaActual) {
+                    dia.classList.add('today');
+                    dia.onclick = mostrarMensajeDiario;
+                }
+            });
+            // Generar algunos corazones iniciales
+            for (let i = 0; i < 5; i++) {
+                setTimeout(generarCorazones, i * 500);
+            }
+        };
+
+        // Cargar la librería de confetti (asegúrate de que esté incluida en tu proyecto o referenciada desde un CDN)
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>
